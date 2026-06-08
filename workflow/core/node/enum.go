@@ -26,3 +26,7 @@ const (
 	RequestModeSync  RequestMode = "sync"  // 同步节点
 	RequestModeAsync RequestMode = "async" // 异步节点
 )
+
+type (
+	ActionNodeType string // 动作节点的类型，一个工作流里可能会调用多个类型的节点，比如规则引擎节点，因此需要用type字段
+)

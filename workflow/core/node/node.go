@@ -2,26 +2,64 @@ package node
 
 import "context"
 
-// NodeParam 节点执行参数
-type NodeParam struct {
-	RunParam any   // 用户请求参数
-	UID      int64 // 用户id
-	//InstanceID  string // 工作流实例id
-	GraphID     string // 工作流图id
-	TaskId      string // 任务id，异步节点时会传
-	LastNodeErr error  // 上个节点的执行错误
+// Node 节点定义
+type Node struct {
+	NodeID     string      `json:"node_id,omitempty"` // 节点id
+	Name       string      `json:"name,omitempty"`
+	Type       NodeType    `json:"type"` // 节点类型
+	Desc       string      `json:"desc"`
+	NextNodes  []string    `json:"nextnodes,omitempty"`  // 下个节点id todo 为什么不是直接nodeProcessor?
+	Dependents []string    `json:"dependents,omitempty"` // 依赖节点id，如果节点为空，则表示入口节点
+	Status     NodeStatus  `json:"status"`               // 状态，进展
+	ReqMode    RequestMode `json:"req_mode"`             // 状态，进展
 }
 
-// NodeProcessor 节点执行器
-type NodeProcessor interface {
-	Process(ctx context.Context, p *NodeParam) (NodeStatus, []string, error) // Process 处理节点的核心方法
-	GetNodeID() string                                                       // GetNodeID 获取节点ID
-	GetType() NodeType                                                       // GetType 获取节点类型
-	GetName() string                                                         // GetName 获取节点名称
-	ReqMode() RequestMode                                                    // 请求模式，同步/异步
-	GetStatus() NodeStatus                                                   // GetStatus 获取节点状态
-	SetStatus(status NodeStatus)                                             // SetStatus 设置节点状态
-	GetSuccessors() []string                                                 // 获取继任节点
-	//GetDependents() []string                                                 // GetDependents 获取依赖节点
-	//SetDependents(list []string)
+// Process 处理节点的核心方法
+func (n *Node) Process(ctx context.Context, p *NodeParam) (NodeStatus, []string, error) {
+	return NodeStatusSucc, n.NextNodes, nil
+}
+
+// GetNodeID 获取节点ID
+func (n *Node) GetNodeID() string {
+	return n.NodeID
+}
+
+// GetType 获取节点类型
+func (n *Node) GetType() NodeType {
+	return n.Type
+}
+
+// GetName 获取节点名称
+func (n *Node) GetName() string {
+	return n.Name
+}
+
+// GetReqMode 请求模式，同步/异步
+func (n *Node) GetReqMode() RequestMode {
+	return RequestModeSync
+}
+
+// GetStatus 获取节点状态
+func (n *Node) GetStatus() NodeStatus {
+	return n.Status
+}
+
+// SetStatus 设置节点状态
+func (n *Node) SetStatus(status NodeStatus) {
+	n.Status = status
+}
+
+// GetNextNodes 获取继任节点
+func (n *Node) GetNextNodes() []string {
+	return n.NextNodes
+}
+
+// GetDependents 获取依赖节点
+func (n *Node) GetDependents() []string {
+	return n.Dependents
+}
+
+// SetDependents 设置依赖节点
+func (n *Node) SetDependents(list []string) {
+	n.Dependents = list
 }
