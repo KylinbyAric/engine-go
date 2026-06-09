@@ -11,6 +11,8 @@ import (
 	"github.com/engine-go/workflow/core/node/action"
 	"github.com/engine-go/workflow/core/node/condition"
 	"github.com/engine-go/workflow/core/node/state"
+	"github.com/engine-go/workflow/repository/models"
+	errors2 "github.com/pkg/errors"
 	"github.com/spf13/cast"
 )
 
@@ -68,6 +70,7 @@ func (g *Graph) hasCycle() (bool, error) {
 
 }
 
+// buildMap 构建节点map
 func (g *Graph) buildMap() error {
 	nodeMap := make(map[string]node.NodeProcessor)
 	nodes := make([]node.NodeProcessor, 0, len(g.NodesJson))
@@ -95,4 +98,89 @@ func (g *Graph) buildMap() error {
 	g.NodeMap = nodeMap
 	g.Nodes = nodes
 	return nil
+}
+
+// buildDependency 构建依赖关系
+func (g *Graph) buildDependency() {
+	dependMap := make(map[string][]string, len(g.NodeMap))
+	for nodeId, nodeProcessor := range g.NodeMap {
+		for _, sucId := range nodeProcessor.GetNextNodes() {
+			dependMap[sucId] = append(dependMap[sucId], nodeId)
+		}
+	}
+	for nodeId, nodeProcessor := range g.NodeMap {
+		nodeProcessor.SetDependents(dependMap[nodeId])
+	}
+	return
+}
+
+// checkNodeCount 检查图中的节点是否和总节点数量一致
+func (g *Graph) checkNodeCount() error {
+	curNodes := slice.Filter(g.Nodes, func(_ int, item node.NodeProcessor) bool { // 查找开始几点
+		return item.GetType() == node.NodeIn
+	})
+	if len(curNodes) != 1 {
+		return fmt.Errorf("入口节点数量:%v不等于1", len(curNodes))
+	}
+
+	var dfs func(curNode node.NodeProcessor) error
+	var count int
+	visitMap := make(map[string]node.NodeProcessor)
+
+	dfs = func(curNode node.NodeProcessor) error {
+		if _, ok := visitMap[curNode.GetNodeID()]; ok { // 有环，已经遍历过的剔除
+			return nil
+		}
+		count++
+		visitMap[curNode.GetNodeID()] = curNode
+		for _, v := range curNode.GetNextNodes() {
+			next, ok := g.NodeMap[v]
+			if !ok {
+				return fmt.Errorf("节点id:%v未知", v)
+			}
+			err := dfs(next)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	err := dfs(curNodes[0])
+	if err != nil {
+		return err
+	}
+	if count != len(g.Nodes) {
+		return fmt.Errorf("可以遍历节点数量 %v 和实际 %v 不一致", count, len(g.Nodes))
+	}
+	return nil
+}
+
+// ParseGraph 解析图配置
+func ParseGraph(d string) (*Graph, error) {
+	g := &Graph{}
+	err := sonic.UnmarshalString(d, &g)
+	if err != nil {
+		return nil, err
+	}
+	err = g.buildMap()
+	if err != nil {
+		return nil, err
+	}
+	g.buildDependency()
+	err = g.checkNodeCount()
+	if err != nil {
+		return g, err
+	}
+	return g, nil
+}
+
+func ModelToGraph(d *models.WfGraph) (*Graph, error) {
+	g, err := ParseGraph(d.Graph)
+	if err != nil {
+		return nil, errors2.Wrap(err, "ParseGraph 失败")
+	}
+	g.GraphId = d.GraphID
+	g.Name = d.Name
+	g.Type = d.Type
+	return g, nil
 }

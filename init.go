@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/engine-go/domain/workflow/node/action"
-	"github.com/engine-go/workflow/models"
+	"github.com/engine-go/workflow/repository/cache"
+	"github.com/engine-go/workflow/repository/models"
 )
 
 func init() {
@@ -12,4 +13,6 @@ func init() {
 	if err := models.Init(); err != nil {
 		panic("init mysql: %v")
 	}
+	// 初始化本地cache
+	cache.Init()
 }

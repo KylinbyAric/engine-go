@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/engine-go/workflow/dao"
-	"github.com/engine-go/workflow/models"
+	"github.com/engine-go/workflow/repository/dao"
+	"github.com/engine-go/workflow/repository/models"
 	"github.com/gin-gonic/gin"
 )
 

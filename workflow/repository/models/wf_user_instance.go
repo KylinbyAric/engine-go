@@ -20,7 +20,6 @@ type WfUserInstance struct {
 	Graph      string               `gorm:"column:graph;type:text;not null" json:"graph"`
 	Status     WfUserInstanceStatus `gorm:"column:status;not null" json:"status"`
 	StatusMsg  string               `gorm:"column:status_msg;size:255;not null" json:"status_msg"`
-	FormID     string               `gorm:"column:form_id;size:255;not null;default:''" json:"form_id"`
 	CurrStepID string               `gorm:"column:curr_step_id;size:255;not null;default:''" json:"curr_step_id"`
 	DataInfo   string               `gorm:"column:data_info;type:text;not null" json:"data_info"`
 	BaseModel

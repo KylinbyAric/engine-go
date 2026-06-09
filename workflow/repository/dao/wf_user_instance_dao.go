@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/engine-go/workflow/models"
+	models "github.com/engine-go/workflow/repository/models"
 	"gorm.io/gorm"
 )
 
