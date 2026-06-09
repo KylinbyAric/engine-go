@@ -1,9 +1,10 @@
-package models
+package dao
 
 import (
 	"context"
 	"errors"
 
+	"github.com/engine-go/workflow/models"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +14,7 @@ type WfGraphDao struct {
 
 func NewWfGraphDao(db *gorm.DB) *WfGraphDao {
 	if db == nil {
-		db = DB()
+		db = models.DB()
 	}
 	return &WfGraphDao{db: db}
 }
@@ -22,12 +23,12 @@ func (d *WfGraphDao) WithTx(tx *gorm.DB) *WfGraphDao {
 	return &WfGraphDao{db: tx}
 }
 
-func (d *WfGraphDao) Create(ctx context.Context, g *WfGraph) error {
+func (d *WfGraphDao) Create(ctx context.Context, g *models.WfGraph) error {
 	return d.db.WithContext(ctx).Create(g).Error
 }
 
-func (d *WfGraphDao) GetByID(ctx context.Context, id int64) (*WfGraph, error) {
-	var g WfGraph
+func (d *WfGraphDao) GetByID(ctx context.Context, id int64) (*models.WfGraph, error) {
+	var g models.WfGraph
 	err := d.db.WithContext(ctx).
 		Where("id = ? AND is_delete = 0", id).
 		First(&g).Error
@@ -40,8 +41,8 @@ func (d *WfGraphDao) GetByID(ctx context.Context, id int64) (*WfGraph, error) {
 	return &g, nil
 }
 
-func (d *WfGraphDao) GetByGraphID(ctx context.Context, graphID string) (*WfGraph, error) {
-	var g WfGraph
+func (d *WfGraphDao) GetByGraphID(ctx context.Context, graphID string) (*models.WfGraph, error) {
+	var g models.WfGraph
 	err := d.db.WithContext(ctx).
 		Where("graph_id = ? AND is_delete = 0", graphID).
 		First(&g).Error
@@ -54,12 +55,12 @@ func (d *WfGraphDao) GetByGraphID(ctx context.Context, graphID string) (*WfGraph
 	return &g, nil
 }
 
-func (d *WfGraphDao) Update(ctx context.Context, g *WfGraph) error {
+func (d *WfGraphDao) Update(ctx context.Context, g *models.WfGraph) error {
 	if g.ID == 0 {
 		return errors.New("wf_graph: id is required for update")
 	}
 	return d.db.WithContext(ctx).
-		Model(&WfGraph{}).
+		Model(&models.WfGraph{}).
 		Where("id = ? AND is_delete = 0", g.ID).
 		Updates(g).Error
 }
@@ -69,12 +70,12 @@ func (d *WfGraphDao) UpdateFields(ctx context.Context, id int64, fields map[stri
 		return nil
 	}
 	return d.db.WithContext(ctx).
-		Model(&WfGraph{}).
+		Model(&models.WfGraph{}).
 		Where("id = ? AND is_delete = 0", id).
 		Updates(fields).Error
 }
 
-func (d *WfGraphDao) UpdateStatus(ctx context.Context, id int64, status WfGraphStatus, updateBy string) error {
+func (d *WfGraphDao) UpdateStatus(ctx context.Context, id int64, status models.WfGraphStatus, updateBy string) error {
 	return d.UpdateFields(ctx, id, map[string]any{
 		"status":    status,
 		"update_by": updateBy,
@@ -83,11 +84,11 @@ func (d *WfGraphDao) UpdateStatus(ctx context.Context, id int64, status WfGraphS
 
 func (d *WfGraphDao) Delete(ctx context.Context, id int64, updateBy string) error {
 	return d.db.WithContext(ctx).
-		Model(&WfGraph{}).
+		Model(&models.WfGraph{}).
 		Where("id = ? AND is_delete = 0", id).
 		Updates(map[string]any{
 			"is_delete": 1,
-			"status":    WfGraphStatusDeleted,
+			"status":    models.WfGraphStatusDeleted,
 			"update_by": updateBy,
 		}).Error
 }
@@ -96,7 +97,7 @@ type WfGraphQuery struct {
 	GraphID  string
 	Name     string
 	Type     string
-	Status   *WfGraphStatus
+	Status   *models.WfGraphStatus
 	RecordID *int64
 	CreateBy string
 
@@ -105,11 +106,11 @@ type WfGraphQuery struct {
 	Limit   int
 }
 
-func (d *WfGraphDao) List(ctx context.Context, q *WfGraphQuery) ([]*WfGraph, int64, error) {
+func (d *WfGraphDao) List(ctx context.Context, q *WfGraphQuery) ([]*models.WfGraph, int64, error) {
 	if q == nil {
 		q = &WfGraphQuery{}
 	}
-	tx := d.db.WithContext(ctx).Model(&WfGraph{}).Where("is_delete = 0")
+	tx := d.db.WithContext(ctx).Model(&models.WfGraph{}).Where("is_delete = 0")
 	if q.GraphID != "" {
 		tx = tx.Where("graph_id = ?", q.GraphID)
 	}
@@ -146,7 +147,7 @@ func (d *WfGraphDao) List(ctx context.Context, q *WfGraphQuery) ([]*WfGraph, int
 		tx = tx.Offset(q.Offset)
 	}
 
-	var list []*WfGraph
+	var list []*models.WfGraph
 	if err := tx.Find(&list).Error; err != nil {
 		return nil, 0, err
 	}

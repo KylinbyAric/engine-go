@@ -4,16 +4,17 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/engine-go/workflow/dao"
 	"github.com/engine-go/workflow/models"
 	"github.com/gin-gonic/gin"
 )
 
 type GraphHandler struct {
-	dao *models.WfGraphDao
+	dao *dao.WfGraphDao
 }
 
 func NewGraphHandler() *GraphHandler {
-	return &GraphHandler{dao: models.NewWfGraphDao(nil)}
+	return &GraphHandler{dao: dao.NewWfGraphDao(nil)}
 }
 
 type respEnvelope struct {
@@ -40,7 +41,7 @@ func parseID(c *gin.Context) (int64, bool) {
 }
 
 func (h *GraphHandler) List(c *gin.Context) {
-	q := &models.WfGraphQuery{
+	q := &dao.WfGraphQuery{
 		GraphID:  c.Query("graph_id"),
 		Name:     c.Query("name"),
 		Type:     c.Query("type"),
