@@ -1,18 +1,27 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"embed"
+	"flag"
+	"io/fs"
 	"log"
 
-	"github.com/engine-go/workflow/models"
+	"github.com/engine-go/workflow/api"
 )
 
+//go:embed public/static
+var embeddedStatic embed.FS
+
 func main() {
-	dao := models.NewWfGraphDao(nil)
-	_, total, err := dao.List(context.Background(), &models.WfGraphQuery{Limit: 1})
+	addr := flag.String("addr", ":8080", "http listen addr")
+	flag.Parse()
+
+	sub, err := fs.Sub(embeddedStatic, "public/static")
 	if err != nil {
-		log.Fatalf("list wf_graph: %v", err)
+		log.Fatalf("sub static fs: %v", err)
 	}
-	fmt.Printf("engine-go started, wf_graph rows=%d\n", total)
+	log.Printf("engine-go listening on %s", *addr)
+	if err := api.Run(*addr, sub); err != nil {
+		log.Fatalf("api server: %v", err)
+	}
 }
