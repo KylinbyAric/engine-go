@@ -39,7 +39,7 @@ func NewEngine(staticFS fs.FS) *gin.Engine {
 		g.DELETE("/:id", gh.Delete)
 	}
 	// 兼容 index.html 写死的接口路径
-	r.POST("/onboard/api/v1/workflow/graph/detail", gh.Detail)
+	r.POST("/api/v1/workflow/graph/detail", gh.Detail)
 	return r
 }
 

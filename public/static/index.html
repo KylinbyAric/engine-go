@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>准入业务工作流</title>
+    <title>工作流</title>
     <style>
         :root {
             --bg-page: #f0f2f5;
@@ -2001,9 +2001,9 @@
             var currentUrl = window.location.href;
             var baseUrlMatch = currentUrl.match(/^(.*?)\/public\/static\//i);
             if (baseUrlMatch && baseUrlMatch[1]) {
-                return baseUrlMatch[1] + '/onboard/api/v1/workflow/graph/detail';
+                return baseUrlMatch[1] + '/api/v1/workflow/graph/detail';
             }
-            return window.location.origin + '/onboard/api/v1/workflow/graph/detail';
+            return window.location.origin + '/api/v1/workflow/graph/detail';
         }
 
         function loadWorkflow() {

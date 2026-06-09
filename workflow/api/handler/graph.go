@@ -129,7 +129,7 @@ func (h *GraphHandler) Update(c *gin.Context) {
 	ok(c, gin.H{"id": id})
 }
 
-// Detail 兼容前端写死的接口路径：POST /onboard/api/v1/workflow/graph/detail
+// Detail 兼容前端写死的接口路径：POST /api/v1/workflow/graph/detail
 // 请求体 {graph_id: "..."}；响应 {data:{graph: WfGraph}}，
 // 页面会取 data.graph.graph 反序列化成 {nodes:[...]}。
 type detailReq struct {
