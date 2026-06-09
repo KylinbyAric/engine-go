@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/engine-go/workflow/conf"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -69,9 +68,9 @@ func SetDB(d *gorm.DB) {
 // Init 加载 conf/<env>/app.toml，初始化全局 *gorm.DB 并 ping 一次。
 // 失败返回 error，调用方（init.go / main）自行决定 panic 还是降级。
 func Init() error {
-	cfg, err := conf.Load("")
+	cfg, err := LoadConfig("")
 	if err != nil {
-		return fmt.Errorf("models.Init load conf: %w", err)
+		return fmt.Errorf("models.Init load config: %w", err)
 	}
 	mc := cfg.Mysql
 	if mc.DSN == "" {

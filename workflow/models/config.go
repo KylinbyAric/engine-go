@@ -1,4 +1,4 @@
-package conf
+package models
 
 import (
 	"fmt"
@@ -24,14 +24,14 @@ type AppConf struct {
 }
 
 var (
-	cfg     AppConf
-	cfgOnce sync.Once
-	cfgErr  error
+	appCfg     AppConf
+	appCfgOnce sync.Once
+	appCfgErr  error
 )
 
-// Load 读取 conf/<env>/app.toml；env 取自参数 / 环境变量 APP_ENV，默认 dev。
-func Load(env string) (*AppConf, error) {
-	cfgOnce.Do(func() {
+// LoadConfig 读取 conf/<env>/app.toml；env 取自参数 / 环境变量 APP_ENV，默认 dev。
+func LoadConfig(env string) (*AppConf, error) {
+	appCfgOnce.Do(func() {
 		if env == "" {
 			env = os.Getenv("APP_ENV")
 		}
@@ -39,19 +39,19 @@ func Load(env string) (*AppConf, error) {
 			env = "dev"
 		}
 		path := resolveConfPath(env)
-		if _, err := toml.DecodeFile(path, &cfg); err != nil {
-			cfgErr = fmt.Errorf("load config %s failed: %w", path, err)
+		if _, err := toml.DecodeFile(path, &appCfg); err != nil {
+			appCfgErr = fmt.Errorf("load config %s failed: %w", path, err)
 			return
 		}
 	})
-	if cfgErr != nil {
-		return nil, cfgErr
+	if appCfgErr != nil {
+		return nil, appCfgErr
 	}
-	return &cfg, nil
+	return &appCfg, nil
 }
 
-func Get() *AppConf {
-	return &cfg
+func Config() *AppConf {
+	return &appCfg
 }
 
 func resolveConfPath(env string) string {

@@ -1,0 +1,35 @@
+# Go 编译产物
+/engine-go
+/engine-go.exe
+*.exe
+*.test
+*.out
+*.prof
+
+# 依赖目录（仅在使用 vendor 模式时取消注释）
+# vendor/
+
+# IDE / 编辑器
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Claude Code 本地数据
+.claude/settings.local.json
+.claude/sessions/
+.claude/projects/
+.claude/cache/
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+tmp/
+.tmp/
