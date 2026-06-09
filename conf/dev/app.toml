@@ -1,0 +1,12 @@
+[mysql]
+# 本地开发：Homebrew 安装的 mysql，无密码，库名 engine_workflow
+dsn = "root:12345678@tcp(127.0.0.1:3306)/engine_workflow?charset=utf8mb4&parseTime=true&loc=Local&timeout=5s&readTimeout=3s&writeTimeout=3s"
+# 远端示例（备份）：
+# dsn = "didi_t7Tm:p4YzFf29A@(10.78.133.3:791)/gulfstream?timeout=5000ms&readTimeout=1000ms&writeTimeout=1000ms&charset=utf8&parseTime=true&loc=Local"
+disf_enable = false
+# connect_timeout 在 disf 模式使用
+connect_timeout = 5000
+metrics_enable = true
+max_open_conns = 50
+max_idle_conns = 10
+conn_max_lifetime_seconds = 3600

@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS `wf_graph` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '唯一标识，主键ID',
+  `graph_id` varchar(64) DEFAULT NULL COMMENT '流程图表id',
+  `name` varchar(255) NOT NULL COMMENT '名称',
+  `description` varchar(512) NOT NULL COMMENT '描述',
+  `graph` text NOT NULL COMMENT '图节点信息',
+  `version` int(11) NOT NULL COMMENT '版本号',
+  `type` varchar(64) NOT NULL COMMENT '类型：svc_pipe:服务编排 flow_pipe:流程编排',
+  `record_id` bigint(20) NOT NULL COMMENT '记录ID',
+  `status` int(11) NOT NULL COMMENT '状态 1 草稿 2生效 3 下线  4 删除',
+  `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '删除标识 0-未删除 1-已删除',
+  `create_by` varchar(255) NOT NULL COMMENT '创建用户',
+  `update_by` varchar(255) NOT NULL COMMENT '最后更新用户',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_graph_id` (`graph_id`),
+  KEY `idx_type_status` (`type`, `status`),
+  KEY `idx_record_id` (`record_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='工作流配置表';

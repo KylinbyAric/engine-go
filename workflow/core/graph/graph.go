@@ -2,9 +2,16 @@ package graph
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/bytedance/sonic"
 	"github.com/duke-git/lancet/v2/slice"
+	"github.com/engine-go/workflow/common"
 	"github.com/engine-go/workflow/core/node"
+	"github.com/engine-go/workflow/core/node/action"
+	"github.com/engine-go/workflow/core/node/condition"
+	"github.com/engine-go/workflow/core/node/state"
+	"github.com/spf13/cast"
 )
 
 // Graph 工作流图定义
@@ -59,4 +66,33 @@ func (g *Graph) hasCycle() (bool, error) {
 
 	return dfs(inNodes[0]), nil
 
+}
+
+func (g *Graph) buildMap() error {
+	nodeMap := make(map[string]node.NodeProcessor)
+	nodes := make([]node.NodeProcessor, 0, len(g.NodesJson))
+	for _, v := range g.NodesJson {
+		var temp node.NodeProcessor
+		switch node.NodeType(cast.ToString(v["type"])) {
+		case node.NodeAction:
+			temp = new(action.ActionNode)
+		case node.NodeCondition:
+			temp = new(condition.ConditionNode)
+		case node.NodeState:
+			temp = new(state.StateNode)
+		case node.NodeIn:
+			temp = new(node.Node)
+		default:
+			return fmt.Errorf("未知的节点类型:[%v]", v["type"])
+		}
+		err := sonic.UnmarshalString(common.StructToString(v), temp)
+		if err != nil {
+			return err
+		}
+		nodes = append(nodes, temp)
+		nodeMap[temp.GetNodeID()] = temp
+	}
+	g.NodeMap = nodeMap
+	g.Nodes = nodes
+	return nil
 }
