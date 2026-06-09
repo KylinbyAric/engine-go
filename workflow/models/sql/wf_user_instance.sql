@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS `wf_user_instance` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '唯一标识，主键ID',
+  `uid` bigint(20) NOT NULL COMMENT 'uid',
+  `instance_id` varchar(255) DEFAULT NULL COMMENT '流程实例id',
+  `name` varchar(255) NOT NULL COMMENT '名称',
+  `graph_id` text NOT NULL COMMENT '图节点id',
+  `graph` text NOT NULL COMMENT '命中的工作流快照信息',
+  `status` int(11) NOT NULL COMMENT '状态 1 初始态 2 开始执行  3执行成功 4执行失败 5异常',
+  `status_msg` varchar(255) NOT NULL COMMENT '状态描述',
+  `form_id` varchar(255) NOT NULL DEFAULT '' COMMENT '关联的表单配置id',
+  `curr_step_id` varchar(255) NOT NULL DEFAULT '' COMMENT '当前运行的节点id列表',
+  `data_info` text NOT NULL COMMENT '用户上下文信息',
+  `create_by` varchar(255) NOT NULL DEFAULT '' COMMENT '创建用户',
+  `update_by` varchar(255) NOT NULL DEFAULT '' COMMENT '最后更新用户',
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '删除标识 0-未删除 1-已删除',
+  PRIMARY KEY (`id`),
+  KEY `idx_uid_status` (`uid`, `status`),
+  KEY `idx_instance_id` (`instance_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='用户工作流实例表';
