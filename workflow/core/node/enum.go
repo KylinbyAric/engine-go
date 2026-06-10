@@ -1,5 +1,7 @@
 package node
 
+import "github.com/engine-go/workflow/repository/models"
+
 type NodeType string
 
 const (
@@ -19,6 +21,23 @@ const (
 	NodeStatusFail    NodeStatus = 4 // 执行失败
 	NodeStatusErr     NodeStatus = 5 // 执行错误
 )
+
+func (s NodeStatus) ToTaskStatus() models.WfTaskStatus {
+	switch s {
+	case NodeStatusToBeExe:
+		return models.WfTaskStatusInit
+	case NodeStatusRunning:
+		return models.WfTaskStatusInit
+	case NodeStatusSucc:
+		return models.WfTaskStatusSuccess
+	case NodeStatusFail:
+		return models.WfTaskStatusFail
+	case NodeStatusErr:
+		return models.WfTaskStatusErr
+	default:
+		return -1
+	}
+}
 
 type RequestMode string
 

@@ -10,6 +10,23 @@ const (
 	WfUserInstanceStatusError   WfUserInstanceStatus = 5 // 异常
 )
 
+func (t WfUserInstanceStatus) String() string {
+	switch t {
+	case WfUserInstanceStatusInit:
+		return "待执行"
+	case WfUserInstanceStatusRunning:
+		return "执行中"
+	case WfUserInstanceStatusSuccess:
+		return "执行成功"
+	case WfUserInstanceStatusFailed:
+		return "执行失败"
+	case WfUserInstanceStatusError:
+		return "执行异常"
+	default:
+		return "未知"
+	}
+}
+
 // WfUserInstance 用户工作流实例
 type WfUserInstance struct {
 	ID         int64                `gorm:"column:id;primaryKey;autoIncrement" json:"id"`

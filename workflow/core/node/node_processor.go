@@ -18,9 +18,9 @@ type NodeProcessor interface {
 
 // NodeParam 节点执行参数
 type NodeParam struct {
-	RunParam any   // 用户请求参数
-	UID      int64 // 用户id
-	//InstanceID  string // 工作流实例id
+	RunParam    any    // 用户请求参数
+	UID         int64  // 用户id
+	InstanceID  string // 工作流实例id
 	GraphID     string // 工作流图id
 	TaskId      string // 任务id，异步节点时会传
 	LastNodeErr error  // 上个节点的执行错误

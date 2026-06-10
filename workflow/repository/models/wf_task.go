@@ -5,11 +5,26 @@ import "time"
 type WfTaskStatus int
 
 const (
-	WfTaskStatusTodo WfTaskStatus = 0 // 待办
-	WfTaskStatusDone WfTaskStatus = 1 // 已办
-	WfTaskStatusStop WfTaskStatus = 2 // 终止
-	WfTaskStatusHang WfTaskStatus = 3 // 挂起
+	WfTaskStatusInit    WfTaskStatus = 1 // 执行中
+	WfTaskStatusSuccess WfTaskStatus = 2 // 成功完成
+	WfTaskStatusFail    WfTaskStatus = 3 // 失败
+	WfTaskStatusErr     WfTaskStatus = 4 // 异常
 )
+
+func (t WfTaskStatus) String() string {
+	switch t {
+	case WfTaskStatusInit:
+		return "执行中"
+	case WfTaskStatusSuccess:
+		return "成功"
+	case WfTaskStatusFail:
+		return "失败"
+	case WfTaskStatusErr:
+		return "异常"
+	default:
+		return "未知"
+	}
+}
 
 // WfTask 工作流任务执行记录
 // 注意：本表无 create_by / update_by，因此不嵌入 BaseModel，公共字段手写。
